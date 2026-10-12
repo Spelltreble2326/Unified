@@ -1,0 +1,44 @@
+<div
+  id="sync-status-{{ league.pk }}"
+  class="inline-flex shrink-0 flex-col items-start gap-1"
+  {% if league.is_syncing %}
+    hx-get="{% url 'league-sync-status' league.pk %}{% if show_meta %}?meta=1{% endif %}"
+    hx-trigger="every 2s"
+    hx-swap="outerHTML"
+  {% endif %}
+>
+  <form method="post" action="{% url 'league-sync' league.pk %}{% if show_meta %}?meta=1{% endif %}">
+    {% csrf_token %}
+    <div class="flex items-center gap-2">
+      <button
+        type="submit"
+        {% if league.is_syncing %}disabled aria-busy="true"{% endif %}
+        hx-post="{% url 'league-sync' league.pk %}{% if show_meta %}?meta=1{% endif %}"
+        hx-target="#sync-status-{{ league.pk }}"
+        hx-swap="outerHTML"
+        class="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {% if league.is_syncing %}Syncing{% else %}Sync{% endif %}
+      </button>
+      {% if league.is_syncing %}
+        <svg
+          class="h-5 w-5 animate-spin text-slate-400"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      {% endif %}
+    </div>
+  </form>
+  {% if league.sync_error and not league.is_syncing %}
+    <span class="max-w-xs text-xs text-red-600">{{ league.sync_error }}</span>
+  {% elif show_meta and league.is_syncing %}
+    <span class="whitespace-nowrap text-xs text-slate-500">Syncing from {{ league.get_platform_display }}…</span>
+  {% elif show_meta and league.last_synced %}
+    <span class="whitespace-nowrap text-xs text-slate-500">Last synced {{ league.last_synced|date:"Y-m-d H:i" }}</span>
+  {% endif %}
+</div>

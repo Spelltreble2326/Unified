@@ -1,0 +1,55 @@
+<div class="space-y-4">
+  <div>
+    <label for="id_league_id" class="block text-sm font-medium text-slate-700">League ID</label>
+    <input
+      id="id_league_id"
+      name="league_id"
+      type="text"
+      inputmode="numeric"
+      required
+      value="{{ form.league_id.value|default_if_none:'' }}"
+      placeholder="1405873656659267584"
+      class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    >
+    <p class="mt-1 text-xs text-slate-500">From the Sleeper league URL. Sleeper leagues are public by ID — no login cookie.</p>
+  </div>
+
+  <div>
+    <label for="id_name" class="block text-sm font-medium text-slate-700">Display name <span class="font-normal text-slate-400">(optional)</span></label>
+    <input
+      id="id_name"
+      name="name"
+      type="text"
+      value="{{ form.name.value|default_if_none:'' }}"
+      placeholder="Filled from Sleeper if you leave this blank"
+      class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    >
+  </div>
+
+  <div>
+    <label for="id_league_url" class="block text-sm font-medium text-slate-700">League URL <span class="font-normal text-slate-400">(optional)</span></label>
+    <input
+      id="id_league_url"
+      name="league_url"
+      type="url"
+      value="{{ form.league_url.value|default_if_none:'' }}"
+      placeholder="https://sleeper.app/leagues/..."
+      class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    >
+    <p class="mt-1 text-xs text-slate-500">The URL will appear on your league and be clickable to visit the league.</p>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <button
+      type="button"
+      class="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+      hx-post="{% url 'league-validate' %}"
+      hx-target="#league-validate-result"
+      hx-include="closest form"
+      hx-swap="innerHTML"
+    >
+      Check league
+    </button>
+    <div id="league-validate-result"></div>
+  </div>
+</div>

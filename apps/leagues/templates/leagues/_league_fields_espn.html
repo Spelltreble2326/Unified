@@ -1,0 +1,120 @@
+<div class="space-y-4">
+  <div>
+    <label for="id_league_id" class="block text-sm font-medium text-slate-700">League ID</label>
+    <input
+      id="id_league_id"
+      name="league_id"
+      type="text"
+      inputmode="numeric"
+      required
+      value="{{ form.league_id.value|default_if_none:'' }}"
+      placeholder="123456"
+      class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    >
+    <p class="mt-1 text-xs text-slate-500">From the league URL: fantasy.espn.com/football/league?leagueId=…</p>
+  </div>
+
+  <div>
+    <label for="id_name" class="block text-sm font-medium text-slate-700">Display name <span class="font-normal text-slate-400">(optional)</span></label>
+    <input
+      id="id_name"
+      name="name"
+      type="text"
+      value="{{ form.name.value|default_if_none:'' }}"
+      placeholder="Filled from ESPN if you leave this blank"
+      class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    >
+  </div>
+
+  <div>
+    <label for="id_league_url" class="block text-sm font-medium text-slate-700">League URL <span class="font-normal text-slate-400">(optional)</span></label>
+    <input
+      id="id_league_url"
+      name="league_url"
+      type="url"
+      value="{{ form.league_url.value|default_if_none:'' }}"
+      placeholder="https://fantasy.espn.com/football/league?leagueId=..."
+      class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+    >
+    <p class="mt-1 text-xs text-slate-500">The URL will appear on your league and be clickable to visit the league.</p>
+  </div>
+
+  <label class="flex items-start gap-2 text-sm text-slate-700">
+    <input
+      type="checkbox"
+      name="is_private"
+      {% if is_private %}checked{% endif %}
+      class="mt-0.5 text-indigo-600"
+      hx-get="{% url 'league-fields' %}"
+      hx-target="#league-fields"
+      hx-include="closest form"
+      hx-vals='{"platform": "espn"}'
+      hx-trigger="change"
+    >
+    <span>
+      Private league
+      <span class="block text-xs font-normal text-slate-500">Needs espn_s2 and SWID from the browser extension.</span>
+    </span>
+  </label>
+
+  {% if is_private %}
+    <div class="space-y-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
+      <div class="flex items-center gap-3">
+        <a
+          href="{% url 'extension-download' %}"
+          class="inline-flex items-center gap-1.5 rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700"
+        >
+          ↓ Download extension
+        </a>
+      </div>
+
+      <details class="group rounded-lg border border-slate-200 bg-white">
+        <summary class="flex cursor-pointer select-none list-none items-center justify-between px-4 py-2.5 text-sm font-medium text-slate-700">
+          How to install the extension
+          <span class="text-slate-400 transition-transform group-open:rotate-180">▾</span>
+        </summary>
+        <ol class="list-inside list-decimal space-y-1 px-4 pb-4 pt-2 text-sm text-slate-600">
+          <li>Download the zip above and unzip it anywhere.</li>
+          <li>Open your browser's extensions page (<code>chrome://extensions</code> or <code>edge://extensions</code>).</li>
+          <li>Turn on <strong>Developer mode</strong> (top-right toggle).</li>
+          <li>Click <strong>Load unpacked</strong> and select the unzipped folder.</li>
+          <li>Sign in at <a href="https://fantasy.espn.com" class="underline" target="_blank" rel="noopener">fantasy.espn.com</a>, click the extension icon, and paste both cookies below.</li>
+        </ol>
+      </details>
+      <div>
+        <label for="id_espn_s2" class="block text-sm font-medium text-slate-700">espn_s2</label>
+        <textarea
+          id="id_espn_s2"
+          name="espn_s2"
+          rows="3"
+          class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 font-mono text-xs shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >{{ form.espn_s2.value|default_if_none:'' }}</textarea>
+      </div>
+      <div>
+        <label for="id_swid" class="block text-sm font-medium text-slate-700">SWID</label>
+        <input
+          id="id_swid"
+          name="swid"
+          type="text"
+          value="{{ form.swid.value|default_if_none:'' }}"
+          placeholder="{XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}"
+          class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 font-mono text-xs shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        >
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="flex items-center gap-3">
+    <button
+      type="button"
+      class="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+      hx-post="{% url 'league-validate' %}"
+      hx-target="#league-validate-result"
+      hx-include="closest form"
+      hx-swap="innerHTML"
+    >
+      Check league
+    </button>
+    <div id="league-validate-result"></div>
+  </div>
+</div>

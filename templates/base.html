@@ -1,0 +1,45 @@
+{% load static django_htmx %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Unified Fantasy{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/output.css' %}">
+  <style>
+    /* HTMX indicator: show spinner during requests */
+    .htmx-request svg[style*="display: none"] {
+      display: inline !important;
+    }
+  </style>
+  {% htmx_script %}
+  {% django_htmx_script %}
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+  <header class="border-b border-slate-200 bg-white">
+    <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
+      <a href="{% url 'league-list' %}" class="text-lg font-semibold tracking-tight text-slate-900">
+        Unified Fantasy
+      </a>
+      <nav class="flex items-center gap-4 text-sm">
+        {% if user.is_authenticated %}
+          <a href="{% url 'league-list' %}" class="text-slate-600 hover:text-slate-900">Leagues</a>
+          <a href="{% url 'league-add' %}" class="rounded-md bg-indigo-600 px-3 py-1.5 font-medium text-white hover:bg-indigo-500">
+            Add league
+          </a>
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="text-slate-600 hover:text-slate-900">Log out</button>
+          </form>
+        {% else %}
+          <a href="{% url 'login' %}" class="text-slate-600 hover:text-slate-900">Log in</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-5xl px-4 py-8">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

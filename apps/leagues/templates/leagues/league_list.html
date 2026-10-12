@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Leagues · Unified Fantasy{% endblock %}
+
+{% block content %}
+<div class="flex items-end justify-between gap-4">
+  <div>
+    <h1 class="text-2xl font-semibold tracking-tight">Your leagues</h1>
+    <p class="mt-1 text-sm text-slate-500">ESPN and Sleeper leagues on one account.</p>
+  </div>
+</div>
+
+{% if leagues %}
+  <ul class="mt-6 divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+    {% for league in leagues %}
+      <li id="league-{{ league.pk }}" class="px-4 py-4">
+        <div class="flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+              <p class="font-medium text-slate-900">
+                {% if league.league_url %}
+                  <a href="{{ league.league_url }}" target="_blank" class="text-indigo-600 hover:text-indigo-500 hover:underline">
+                    {{ league.name|default:league.league_id }}
+                  </a>
+                {% else %}
+                  {{ league.name|default:league.league_id }}
+                {% endif %}
+              </p>
+              {% if league.platform == "espn" %}
+                <span class="rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700">ESPN</span>
+              {% else %}
+                <span class="rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700">Sleeper</span>
+              {% endif %}
+              {% if league.is_private_espn %}
+                <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">Private</span>
+              {% endif %}
+            </div>
+            <p class="mt-1 text-xs text-slate-500">
+              <span class="font-mono">{{ league.league_id }}</span>
+              <span class="px-1">·</span>
+              {% if league.is_syncing %}
+                <span class="text-indigo-600">Syncing…</span>
+              {% elif league.last_synced %}
+                Synced {{ league.last_synced|date:"Y-m-d H:i" }}
+              {% else %}
+                Never synced
+              {% endif %}
+            </p>
+          </div>
+          <div class="flex items-center gap-3">
+            {% include "leagues/_sync_button.html" %}
+            <button
+              type="button"
+              class="rounded-md px-2 py-1.5 text-sm font-medium text-slate-500 hover:bg-red-50 hover:text-red-600"
+              hx-delete="{% url 'league-delete' league.pk %}"
+              hx-target="#league-{{ league.pk }}"
+              hx-swap="outerHTML"
+              hx-confirm="Remove this league from your account?"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+        <div class="mt-3 flex flex-wrap gap-2">
+          <a href="{% url 'league-standings' league.pk %}" class="rounded-md bg-slate-50 px-2.5 py-1 text-sm font-medium text-slate-700 ring-1 ring-inset ring-slate-200 hover:bg-white hover:text-indigo-600">Standings</a>
+          <a href="{% url 'league-matchups' league.pk %}" class="rounded-md bg-slate-50 px-2.5 py-1 text-sm font-medium text-slate-700 ring-1 ring-inset ring-slate-200 hover:bg-white hover:text-indigo-600">Matchups</a>
+          <a href="{% url 'league-roster' league.pk %}" class="rounded-md bg-slate-50 px-2.5 py-1 text-sm font-medium text-slate-700 ring-1 ring-inset ring-slate-200 hover:bg-white hover:text-indigo-600">Roster</a>
+          <a href="{% url 'league-activity' league.pk %}" class="rounded-md bg-slate-50 px-2.5 py-1 text-sm font-medium text-slate-700 ring-1 ring-inset ring-slate-200 hover:bg-white hover:text-indigo-600">Activity</a>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <div class="mt-6 rounded-xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
+    <p class="text-sm text-slate-600">No leagues yet.</p>
+    <a href="{% url 'league-add' %}" class="mt-4 inline-block rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-500">
+      Add a league
+    </a>
+  </div>
+{% endif %}
+{% endblock %}

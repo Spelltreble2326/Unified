@@ -1,0 +1,9 @@
+{% if ok %}
+  <p class="text-sm text-emerald-700">Found “{{ name }}”.</p>
+{% else %}
+  <div class="text-sm text-red-700">
+    {% for error in errors %}
+      <p>{{ error }}</p>
+    {% endfor %}
+  </div>
+{% endif %}

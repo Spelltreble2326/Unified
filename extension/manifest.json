@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "ESPN Cookie Extractor",
+  "version": "1.0.0",
+  "description": "Reads espn_s2 and SWID cookies after you log into ESPN and sends them to the local app.",
+  "permissions": ["cookies"],
+  "host_permissions": [
+    "https://*.espn.com/*",
+    "http://localhost:8000/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Extract ESPN Cookies"
+  }
+}
